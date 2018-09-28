@@ -75,21 +75,21 @@ func respond(rtm *slack.RTM, msg *slack.MessageEvent, prefix string) {
 		"feeling okay?":   true,
 	}
 
+	acceptedCommands := map[string]fn{
+		"ip": getInternetIp,
+	}
+
 	if acceptedGreetings[text] {
 		response = "What's up buddy!?!?!"
 		rtm.SendMessage(rtm.NewOutgoingMessage(response, msg.Channel))
 	} else if acceptedHowAreYou[text] {
 		response = "Good. How are you?"
 		rtm.SendMessage(rtm.NewOutgoingMessage(response, msg.Channel))
-	} else {
+	} else if val, ok := acceptedCommands[text]; ok {
 		// Figure out how to return my public IP
-		response = commandFunc(text)
+		response = acceptedCommands
 		rtm.SendMessage(rtm.NewOutgoingMessage(response, msg.Channel))
 	}
-}
-
-func commandFunc(f func() string) string {
-	return f()
 }
 
 func getInternetIp() string {
